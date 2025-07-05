@@ -1,4 +1,8 @@
 
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using user_management_api_dotnet8.Data;
+
 namespace user_management_api_dotnet8
 {
     public class Program
@@ -6,9 +10,10 @@ namespace user_management_api_dotnet8
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
+            var configuration = builder.Configuration;
 
             // Add services to the container.
-
+            builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlServer(configuration.GetConnectionString("DefaultConnection")));
             builder.Services.AddControllers();
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
