@@ -6,8 +6,9 @@ namespace user_management_api_dotnet8.Services
 {
     public interface IUserServices
     {
-         Task<IEnumerable<User>> GetUsersAsync();
-         Task<User> GetUserByIdAsync(Guid id);
-        Task<Guid> CreateUserAsync(UserCreateDto userDto);
+         Task<IEnumerable<UserReadDto>> GetUsersAsync();
+         Task<User> GetUserByIdAsync(int id);
+         Task<int> CreateUserAsync(UserCreateDto userDto);
+        Task<UserUpdateDto> UpdateUserAsync(int id,UserUpdateDto userUpdate);
     }
 }

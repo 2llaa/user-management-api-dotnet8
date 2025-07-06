@@ -17,7 +17,7 @@ namespace user_management_api_dotnet8.Services
             _mapper = mapper;
             _dbContext = dbContext;
         }
-        public async Task<Guid> CreateUserAsync(UserCreateDto userDto)
+        public async Task<int> CreateUserAsync(UserCreateDto userDto)
         {
             if (userDto == null)
                 throw new Exception("there is no content");
@@ -30,14 +30,30 @@ namespace user_management_api_dotnet8.Services
             
         }
 
-        public Task<User> GetUserByIdAsync(Guid id)
+        public Task<User> GetUserByIdAsync(int id)
         {
             throw new NotImplementedException();
         }
 
-        public Task<IEnumerable<User>> GetUsersAsync()
+        public async Task<IEnumerable<UserReadDto>> GetUsersAsync()
         {
-            throw new NotImplementedException();
+           var users=await _dbContext.Users.Where(u=>u.IsActive)
+                .ToListAsync();
+            if (!users.Any())
+                throw new KeyNotFoundException("there is no users");
+
+            return _mapper.Map<IEnumerable<UserReadDto>>(users);
+
+        }
+
+        public async Task<UserUpdateDto> UpdateUserAsync(int id,UserUpdateDto userUpdate)
+        {
+            var user =await _dbContext.Users.FirstOrDefaultAsync(u => u.UserId==id);
+            if (user == null)
+                throw new KeyNotFoundException("User not found.");
+            _mapper.Map(userUpdate,user);
+           await _dbContext.SaveChangesAsync();
+            return userUpdate;
         }
     }
 }
