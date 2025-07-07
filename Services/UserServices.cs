@@ -17,7 +17,7 @@ namespace user_management_api_dotnet8.Services
             _mapper = mapper;
             _dbContext = dbContext;
         }
-        public async Task<int> CreateUserAsync(UserCreateDto userDto)
+        public async Task<UserReadDto> CreateUserAsync(UserCreateDto userDto)
         {
             if (userDto == null)
                 throw new Exception("there is no content");
@@ -26,13 +26,26 @@ namespace user_management_api_dotnet8.Services
             user.IsActive = true;
             await _dbContext.Users.AddAsync(user);
             await _dbContext.SaveChangesAsync();
-            return user.UserId;
+            return _mapper.Map<UserReadDto>(user);
             
         }
 
-        public Task<User> GetUserByIdAsync(int id)
+        public async Task DeleteUserAsync(int id)
         {
-            throw new NotImplementedException();
+           var user = await _dbContext.Users.FirstOrDefaultAsync(u => u.UserId == id && u.IsActive);
+            if (user is null)
+                throw new KeyNotFoundException("User not found or already deleted");
+            user.IsActive = false;
+           await _dbContext.SaveChangesAsync();
+
+        }
+
+        public async Task<UserReadDto> GetUserByIdAsync(int id)
+        {
+            var user = await _dbContext.Users.FirstOrDefaultAsync(u => u.UserId == id && u.IsActive);
+            if (user is null)
+                throw new KeyNotFoundException("user not found");
+            return _mapper.Map<UserReadDto>(user);
         }
 
         public async Task<IEnumerable<UserReadDto>> GetUsersAsync()
@@ -46,14 +59,14 @@ namespace user_management_api_dotnet8.Services
 
         }
 
-        public async Task<UserUpdateDto> UpdateUserAsync(int id,UserUpdateDto userUpdate)
+        public async Task<UserReadDto> UpdateUserAsync(int id,UserUpdateDto userUpdate)
         {
-            var user =await _dbContext.Users.FirstOrDefaultAsync(u => u.UserId==id);
+            var user =await _dbContext.Users.FirstOrDefaultAsync(u => u.UserId==id&&u.IsActive);
             if (user == null)
                 throw new KeyNotFoundException("User not found.");
             _mapper.Map(userUpdate,user);
            await _dbContext.SaveChangesAsync();
-            return userUpdate;
+           return _mapper.Map<UserReadDto>(user);
         }
     }
 }

@@ -20,17 +20,25 @@ namespace user_management_api_dotnet8.Controllers
         {
             if (user == null)
                 return BadRequest();
-            await _userServices.CreateUserAsync(user);
-            return Ok(user);
+           var createduser= await _userServices.CreateUserAsync(user);
+            return CreatedAtAction("GetUserById", new { id = createduser.UserId }, user);
         }
 
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateUser(int id,[FromBody]UserUpdateDto userUpdate)
         {
-            if (userUpdate == null)
-                return BadRequest("Invalid user data");
-            await _userServices.UpdateUserAsync(id, userUpdate);
-            return Ok(userUpdate);
+    
+
+            try
+            {
+                var user=await _userServices.UpdateUserAsync(id, userUpdate);
+                return CreatedAtAction("GetUserById", new {id= user.UserId }, userUpdate);
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(ex.Message);
+            }
+
         }
 
         [HttpGet("Get_All_Users")]
@@ -48,6 +56,32 @@ namespace user_management_api_dotnet8.Controllers
 
         }
 
+        [HttpGet("{id}", Name = "GetUserById")]
+        public async Task<IActionResult>GetUserByID(int id)
+        {
+            try
+            {
+                var user = await _userServices.GetUserByIdAsync(id);
+                return Ok(user);
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(ex.Message);
+            }
+        }
 
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteUser(int id)
+        {
+            try
+            {
+                await _userServices.DeleteUserAsync(id);
+                return NoContent();
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(ex.Message);
+            }
+        }
     }
 }
