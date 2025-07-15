@@ -1,15 +1,17 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using user_management_api_dotnet8.Models;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 
 namespace user_management_api_dotnet8.Data
 {
-    public class AppDbContext : DbContext
-    {
+       public class AppDbContext : IdentityDbContext<User>
+       {
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
         {
 
         }
-        public DbSet<User> Users { get; set; }
+        public DbSet<User> AppUsers { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -19,5 +21,5 @@ namespace user_management_api_dotnet8.Data
 
             base.OnModelCreating(modelBuilder);
         }
-    }
+       }
 }

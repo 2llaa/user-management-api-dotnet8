@@ -17,7 +17,7 @@ namespace user_management_api_dotnet8.Services
             _mapper = mapper;
             _dbContext = dbContext;
         }
-        public async Task<UserReadDto> CreateUserAsync(UserCreateDto userDto)
+        public async Task<UserReadDto> CreateUserAsync(SignUpDto userDto)
         {
             if (userDto == null)
                 throw new Exception("there is no content");
@@ -30,9 +30,9 @@ namespace user_management_api_dotnet8.Services
             
         }
 
-        public async Task DeleteUserAsync(int id)
+        public async Task DeleteUserAsync(string id)
         {
-           var user = await _dbContext.Users.FirstOrDefaultAsync(u => u.UserId == id && u.IsActive);
+           var user = await _dbContext.Users.FirstOrDefaultAsync(u => u.Id == id && u.IsActive);
             if (user is null)
                 throw new KeyNotFoundException("User not found or already deleted");
             user.IsActive = false;
@@ -40,9 +40,9 @@ namespace user_management_api_dotnet8.Services
 
         }
 
-        public async Task<UserReadDto> GetUserByIdAsync(int id)
+        public async Task<UserReadDto> GetUserByIdAsync(string id)
         {
-            var user = await _dbContext.Users.FirstOrDefaultAsync(u => u.UserId == id && u.IsActive);
+            var user = await _dbContext.Users.FirstOrDefaultAsync(u => u.Id == id && u.IsActive);
             if (user is null)
                 throw new KeyNotFoundException("user not found");
             return _mapper.Map<UserReadDto>(user);
@@ -59,9 +59,9 @@ namespace user_management_api_dotnet8.Services
 
         }
 
-        public async Task<UserReadDto> UpdateUserAsync(int id,UserUpdateDto userUpdate)
+        public async Task<UserReadDto> UpdateUserAsync(string id,UserUpdateDto userUpdate)
         {
-            var user =await _dbContext.Users.FirstOrDefaultAsync(u => u.UserId==id&&u.IsActive);
+            var user =await _dbContext.Users.FirstOrDefaultAsync(u => u.Id==id&&u.IsActive);
             if (user == null)
                 throw new KeyNotFoundException("User not found.");
             _mapper.Map(userUpdate,user);

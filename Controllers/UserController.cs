@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using System.Linq.Expressions;
 using user_management_api_dotnet8.DTOs;
 using user_management_api_dotnet8.Services;
@@ -16,7 +18,7 @@ namespace user_management_api_dotnet8.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateUser([FromBody] UserCreateDto user)
+        public async Task<IActionResult> CreateUser([FromBody] SignUpDto user)
         {
             if (user == null)
                 return BadRequest();
@@ -25,9 +27,13 @@ namespace user_management_api_dotnet8.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateUser(int id,[FromBody]UserUpdateDto userUpdate)
+        public async Task<IActionResult> UpdateUser(string id,[FromBody]UserUpdateDto userUpdate)
         {
-    
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
 
             try
             {
@@ -42,6 +48,9 @@ namespace user_management_api_dotnet8.Controllers
         }
 
         [HttpGet("Get_All_Users")]
+        //[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        [Authorize(Roles = "Admin")]
+
         public async Task<IActionResult> GetAllUsers()
         {
             try
@@ -57,7 +66,7 @@ namespace user_management_api_dotnet8.Controllers
         }
 
         [HttpGet("{id}", Name = "GetUserById")]
-        public async Task<IActionResult>GetUserByID(int id)
+        public async Task<IActionResult>GetUserByID(string id)
         {
             try
             {
@@ -71,7 +80,7 @@ namespace user_management_api_dotnet8.Controllers
         }
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteUser(int id)
+        public async Task<IActionResult> DeleteUser(string id)
         {
             try
             {

@@ -9,14 +9,14 @@ namespace user_management_api_dotnet8.Profiles
         public UserProfile()
         {
             //source->target
-            CreateMap<UserCreateDto, User>()
-                .ForMember(dest => dest.HashPassword, opt => opt.MapFrom(src => src.Password));
+            CreateMap<SignUpDto, User>();
 
+            //CreateMap<JwtTokenResultDto, AuthResponseDto>();
 
-            CreateMap<UserUpdateDto, User>()
-                .ForMember(dest => dest.HashPassword, opt => opt.MapFrom(src => src.Password));
+            CreateMap<UserUpdateDto, User>();
 
-            CreateMap<User, UserReadDto>();
+            CreateMap<User, UserReadDto>()
+                  .ForMember(dest => dest.UserId, opt => opt.MapFrom(src => src.Id)); ;
             CreateMap<UserReadDto,User>();
         }
     }

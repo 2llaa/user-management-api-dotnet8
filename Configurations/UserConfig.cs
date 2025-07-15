@@ -10,7 +10,7 @@ namespace user_management_api_dotnet8.Configuration
         {
             builder.ToTable("User");
 
-            builder.HasKey(u => u.UserId);
+            builder.HasKey(u => u.Id);
 
             builder.Property(u => u.UserName)
                 .IsRequired()
@@ -23,7 +23,7 @@ namespace user_management_api_dotnet8.Configuration
             builder.HasIndex(u=> u.Email)
                 .IsUnique();
 
-            builder.Property(u => u.HashPassword)
+            builder.Property(u => u.PasswordHash)
                 .IsRequired();
 
             builder.Property(u => u.IsActive)
